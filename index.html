@@ -1,0 +1,2781 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMJ Library | Digital Reading Space</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Preline UI -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/preline@3.2.3/dist/preline.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #25243a;
+        }
+
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            inset: 0 auto 0 0;
+            background: white;
+            border-right: 1px solid #eeeeF4;
+            z-index: 50;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            width: 100%;
+            border-radius: 10px;
+            color: #77758a;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+            transition: .2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #f2efff;
+            color: #6d4ce8;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #ededf3;
+            border-radius: 16px;
+        }
+
+        .book-card {
+            transition: .25s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(40, 30, 80, .09);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 210px;
+            object-fit: contain;
+            background: #f5f5f8;
+            border-radius: 10px;
+        }
+
+        .progress-track {
+            height: 7px;
+            border-radius: 20px;
+            background: #eceaf2;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #8057e8;
+            border-radius: 20px;
+            transition: width .3s;
+        }
+
+        .quote-banner {
+            background: linear-gradient(120deg, #6045c8, #9277ed);
+            color: white;
+            border-radius: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .25s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ===================================
+     SIDEBAR
+=================================== -->
+
+<aside class="sidebar p-5" id="sidebar">
+
+    <div class="flex items-center gap-3 mb-9">
+        <div class="w-11 h-11 rounded-xl bg-brand-600 text-white flex items-center justify-center text-2xl">
+            📚
+        </div>
+
+        <div>
+            <h1 class="font-extrabold text-lg">GMJ Library</h1>
+            <p class="text-xs text-gray-400">Digital Reading Space</p>
+        </div>
+    </div>
+
+    <p class="text-[10px] font-bold tracking-widest text-gray-400 mb-3">
+        MENU UTAMA
+    </p>
+
+    <nav class="space-y-1">
+
+        <button class="nav-link active" onclick="showPage('home', this)">
+            🏠 Dashboard
+        </button>
+
+        <button class="nav-link" onclick="showPage('catalog', this)">
+            📚 Katalog Buku
+        </button>
+
+        <button class="nav-link" onclick="showPage('borrowed', this)">
+            📖 Buku Dipinjam
+        </button>
+
+        <button class="nav-link" onclick="showPage('reading', this)">
+            ✍️ Buku Dibaca
+        </button>
+
+        <button class="nav-link" onclick="showPage('favorites', this)">
+            ❤️ Favorit
+        </button>
+
+    </nav>
+
+    <p class="text-[10px] font-bold tracking-widest text-gray-400 mt-8 mb-3">
+        AKTIVITAS MEMBACA
+    </p>
+
+    <nav class="space-y-1">
+
+        <button class="nav-link" onclick="showPage('streak', this)">
+            🔥 Reading Streak
+        </button>
+
+        <button class="nav-link" onclick="showPage('quotes', this)">
+            ✨ Quotes Library
+        </button>
+
+        <button class="nav-link" onclick="showPage('profile', this)">
+            👤 Profil Saya
+        </button>
+
+    </nav>
+
+    <div class="absolute bottom-5 left-5 right-5 panel p-4">
+        <p class="font-bold text-sm">GMJ Library UAS</p>
+        <p class="text-xs text-gray-400 mt-1">
+            Read, Learn, and Grow.
+        </p>
+    </div>
+
+</aside>
+
+
+<!-- ===================================
+     MAIN CONTENT
+=================================== -->
+
+<main class="main-content">
+
+    <!-- HEADER -->
+
+    <header class="bg-white border-b border-gray-100 px-5 md:px-8 py-4 sticky top-0 z-30">
+
+        <div class="flex justify-between items-center">
+
+            <div class="flex items-center gap-3">
+
+                <button
+                    class="lg:hidden text-xl"
+                    onclick="toggleSidebar()">
+                    ☰
+                </button>
+
+                <div>
+                    <p class="text-xs text-gray-400">
+                        Welcome to
+                    </p>
+
+                    <h2 class="font-bold text-lg">
+                        GMJ Library
+                    </h2>
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-3">
+
+                <div class="text-right">
+                    <p class="font-bold text-sm" id="headerName">
+                        Guest Reader
+                    </p>
+
+                    <p class="text-xs text-gray-400">
+                        Member
+                    </p>
+                </div>
+
+                <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold">
+                    G
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <div class="p-5 md:p-8">
+
+
+    <!-- ===================================
+         DASHBOARD
+    =================================== -->
+
+    <section class="page active" id="home">
+
+        <div class="mb-7">
+
+            <p class="text-sm text-gray-400">
+                Temukan inspirasi dari setiap halaman.
+            </p>
+
+            <h2 class="text-2xl md:text-3xl font-extrabold mt-2">
+                Good to see you, Reader! 👋
+            </h2>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+
+            <div class="panel p-5">
+                <p class="text-xs text-gray-400">Total Koleksi</p>
+                <h3 class="text-2xl font-extrabold mt-2" id="totalBooks">20</h3>
+                <p class="text-xs text-brand-600 mt-2">Buku tersedia</p>
+            </div>
+
+            <div class="panel p-5">
+                <p class="text-xs text-gray-400">Buku Dipinjam</p>
+                <h3 class="text-2xl font-extrabold mt-2" id="totalBorrowed">0</h3>
+                <p class="text-xs text-gray-400 mt-2">Sedang dipinjam</p>
+            </div>
+
+            <div class="panel p-5">
+                <p class="text-xs text-gray-400">Buku Dibaca</p>
+                <h3 class="text-2xl font-extrabold mt-2" id="totalRead">0</h3>
+                <p class="text-xs text-gray-400 mt-2">Aktivitas membaca</p>
+            </div>
+
+            <div class="panel p-5">
+                <p class="text-xs text-gray-400">Reading Streak</p>
+                <h3 class="text-2xl font-extrabold mt-2" id="totalStreak">0 🔥</h3>
+                <p class="text-xs text-gray-400 mt-2">Hari berturut-turut</p>
+            </div>
+
+        </div>
+
+
+        <!-- QUOTE OF THE DAY -->
+
+        <div class="quote-banner p-6 md:p-8 mb-8">
+
+            <p class="text-xs font-bold tracking-widest opacity-80">
+                QUOTE OF THE DAY
+            </p>
+
+            <h3 id="dashboardQuote"
+                class="text-xl md:text-2xl font-bold mt-4 leading-relaxed">
+                "A room without books is like a body without a soul."
+            </h3>
+
+            <p id="dashboardAuthor" class="text-sm mt-3 opacity-80">
+                — Marcus Tullius Cicero
+            </p>
+
+            <button
+                onclick="nextQuote()"
+                class="mt-5 px-4 py-2 bg-white text-brand-700 rounded-lg text-sm font-bold">
+                Quote Lainnya ↗
+            </button>
+
+        </div>
+
+
+        <!-- CURRENTLY READING -->
+
+        <div class="mb-8">
+
+            <div class="flex justify-between items-center mb-4">
+
+                <div>
+                    <h3 class="font-extrabold text-lg">
+                        📖 Sedang Dibaca
+                    </h3>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        Lanjutkan perjalanan membacamu.
+                    </p>
+                </div>
+
+                <button
+                    onclick="showPage('reading')"
+                    class="text-brand-600 text-sm font-bold">
+                    Lihat Semua →
+                </button>
+
+            </div>
+
+            <div id="currentlyReading" class="grid md:grid-cols-2 gap-4">
+            </div>
+
+        </div>
+
+
+        <!-- POPULAR BOOKS -->
+
+        <div class="mb-8">
+
+            <div class="flex justify-between items-center mb-4">
+
+                <div>
+                    <h3 class="font-extrabold text-lg">
+                        🔥 Populer Minggu Ini
+                    </h3>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        Buku pilihan pembaca.
+                    </p>
+                </div>
+
+            </div>
+
+            <div id="popularBooks"
+                 class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            </div>
+
+        </div>
+
+
+        <!-- RECOMMENDED BOOKS -->
+
+        <div>
+
+            <div class="flex justify-between items-center mb-4">
+
+                <h3 class="font-extrabold text-lg">
+                    Jelajahi Buku
+                </h3>
+
+                <button
+                    onclick="showPage('catalog')"
+                    class="text-brand-600 text-sm font-bold">
+                    Semua Buku →
+                </button>
+
+            </div>
+
+            <div id="homeBooks"
+                 class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         KATALOG BUKU
+    =================================== -->
+
+    <section class="page" id="catalog">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Katalog Buku
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Temukan buku favoritmu.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+
+            <input
+                id="searchBook"
+                type="search"
+                placeholder="Cari judul atau penulis..."
+                class="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-brand-500"
+                oninput="renderCatalog()">
+
+            <select
+                id="categoryFilter"
+                onchange="renderCatalog()"
+                class="border border-gray-200 rounded-xl px-4 py-3 bg-white">
+
+                <option value="">Semua Kategori</option>
+
+            </select>
+
+        </div>
+
+        <div id="catalogBooks"
+             class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         BUKU DIPINJAM
+    =================================== -->
+
+    <section class="page" id="borrowed">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Buku Dipinjam
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Daftar buku yang sedang kamu pinjam.
+        </p>
+
+        <div id="borrowedList" class="grid md:grid-cols-2 gap-4">
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         BUKU DIBACA
+    =================================== -->
+
+    <section class="page" id="reading">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Buku Dibaca
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Pantau progres membaca bukumu.
+        </p>
+
+        <div id="readingList" class="grid md:grid-cols-2 gap-4">
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         FAVORIT
+    =================================== -->
+
+    <section class="page" id="favorites">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Buku Favorit ❤️
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Kumpulan buku pilihanmu.
+        </p>
+
+        <div id="favoriteList"
+             class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         READING STREAK
+    =================================== -->
+
+    <section class="page" id="streak">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Reading Streak 🔥
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Bangun kebiasaan membaca setiap hari.
+        </p>
+
+        <div class="panel p-6 mb-5">
+
+            <p class="text-sm text-gray-400">
+                Streak saat ini
+            </p>
+
+            <h3 class="text-5xl font-extrabold mt-2"
+                id="streakNumber">
+                0 🔥
+            </h3>
+
+            <p class="text-sm text-gray-400 mt-2">
+                Hari berturut-turut membaca
+            </p>
+
+        </div>
+
+        <div class="panel p-6">
+
+            <h3 class="font-bold mb-4">
+                Aktivitas Membaca
+            </h3>
+
+            <div id="streakCalendar"
+                 class="grid grid-cols-7 gap-2">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         QUOTES LIBRARY
+    =================================== -->
+
+    <section class="page" id="quotes">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Quotes Library ✨
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Kata-kata kecil untuk inspirasi besar.
+        </p>
+
+        <div id="quotesCollection"
+             class="grid md:grid-cols-2 gap-4">
+        </div>
+
+    </section>
+
+
+    <!-- ===================================
+         PROFIL
+    =================================== -->
+
+    <section class="page" id="profile">
+
+        <h2 class="text-2xl font-extrabold mb-2">
+            Profil Saya
+        </h2>
+
+        <p class="text-sm text-gray-400 mb-6">
+            Atur identitas pembaca.
+        </p>
+
+        <div class="panel p-6 max-w-xl">
+
+            <label class="block text-sm font-semibold mb-2">
+                Nama Pembaca
+            </label>
+
+            <input
+                id="profileName"
+                type="text"
+                placeholder="Masukkan nama"
+                class="w-full border rounded-xl p-3 mb-4">
+
+            <button
+                onclick="saveProfile()"
+                class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-3 rounded-xl font-bold">
+                Simpan Profil
+            </button>
+
+        <!-- INFORMASI AKUN -->
+<div class="mt-6 border-t border-gray-200 pt-5">
+
+    <h3 class="text-lg font-bold mb-4">
+        Informasi Akun
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500 mb-1">Nama Pengguna</p>
+            <p id="accountName" class="font-semibold">-</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500 mb-1">Email</p>
+            <p id="accountEmail" class="font-semibold">-</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500 mb-1">ID Pengguna</p>
+            <p id="accountId" class="font-semibold">-</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-sm text-gray-500 mb-1">Status Keanggotaan</p>
+            <p id="accountRole" class="font-semibold text-purple-600">
+                Member
+            </p>
+        </div>
+
+    </div>
+</div>
+</div>
+
+    </section>
+
+
+    <!-- DETAIL BUKU -->
+
+    <section class="page" id="detail">
+
+        <button
+            onclick="showPage('catalog')"
+            class="text-brand-600 text-sm font-bold mb-5">
+            ← Kembali ke katalog
+        </button>
+
+        <div id="bookDetail"></div>
+
+    </section>
+
+
+    <!-- HALAMAN MEMBACA -->
+
+    <section class="page" id="reader">
+
+        <button
+            onclick="showPage('reading')"
+            class="text-brand-600 font-bold text-sm mb-5">
+            ← Kembali ke Buku Dibaca
+        </button>
+
+        <div class="panel p-6 md:p-10 max-w-4xl mx-auto">
+
+            <div class="text-center border-b pb-6">
+
+                <p class="text-xs text-brand-600 font-bold">
+                    GMJ DIGITAL READER
+                </p>
+
+                <h2 id="readerTitle"
+                    class="text-2xl font-extrabold mt-3">
+                </h2>
+
+                <p id="readerAuthor"
+                   class="text-sm text-gray-400 mt-2">
+                </p>
+
+            </div>
+
+            <div class="flex justify-between items-center mt-6 text-xs text-gray-400">
+
+                <span id="readerChapterLabel">Bab 1</span>
+
+                <span id="readerProgressLabel">0% selesai</span>
+
+            </div>
+
+            <div class="progress-track mt-2">
+
+                <div id="readerProgressBar"
+                     class="progress-fill"
+                     style="width:0%">
+                </div>
+
+            </div>
+
+            <article class="py-10">
+
+                <h3 id="readerChapterTitle"
+                    class="text-xl font-bold mb-6">
+                </h3>
+
+                <p id="readerContent"
+                   class="text-gray-600 leading-8 text-justify">
+                </p>
+
+            </article>
+
+            <div class="flex justify-between border-t pt-5">
+
+                <button
+                    onclick="previousChapter()"
+                    class="border rounded-xl px-5 py-3 text-sm font-bold">
+                    ← Sebelumnya
+                </button>
+
+                <button
+                    onclick="nextChapter()"
+                    class="bg-brand-600 text-white rounded-xl px-5 py-3 text-sm font-bold">
+                    Selanjutnya →
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    </div>
+</main>
+
+<!-- Preline JS -->
+<script src="https://cdn.jsdelivr.net/npm/preline@3.2.3/dist/preline.min.js"></script>
+
+<!-- JAVASCRIPT AKAN DILANJUTKAN PADA BAGIAN 2 -->
+
+</body>
+</html>
+
+<script>
+
+// ================================================
+// 1. DATA 20 BUKU ASLI DARI UTS
+// ================================================
+
+// ================================================
+// 1. MENGAMBIL DATA BUKU DARI DATABASE MYSQL
+// ================================================
+
+let books = [];
+
+async function loadBooks() {
+    try {
+        const response = await fetch("api/books.php");
+
+        if (!response.ok) {
+            throw new Error("Gagal menghubungi server.");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Data buku gagal dimuat.");
+        }
+
+        books = result.data.map(book => ({
+            id: Number(book.id),
+            title: book.title,
+            author: book.author,
+            category: book.category,
+            year: Number(book.year),
+            pages: Number(book.pages),
+            image: book.image.replace(/\\/g, "/"),
+            synopsis: book.synopsis,
+            pdf_file: book.pdf_file
+        }));
+
+        console.log("Data buku berhasil dimuat:", books);
+
+        return true;
+
+    } catch (error) {
+        console.error("Kesalahan mengambil data buku:", error);
+        alert("Data buku gagal dimuat. Periksa koneksi database.");
+        return false;
+    }
+}
+
+
+// ================================================
+// 2. PENYIMPANAN DATA LOCAL STORAGE
+// ================================================
+
+function loadStorage(key, defaultValue) {
+    try {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : defaultValue;
+    } catch (error) {
+        console.error("Gagal membaca penyimpanan:", error);
+        return defaultValue;
+    }
+}
+
+let borrowed = loadStorage("gmjBorrowed", []);
+let reading = loadStorage("gmjReading", []);
+let favorites = loadStorage("gmjFavorites", []);
+let activities = loadStorage("gmjActivities", []);
+let weeklyViews = loadStorage("gmjWeeklyViews", {});
+
+let readerName = localStorage.getItem("gmjName") || "Guest Reader";
+
+let currentQuote = 0;
+let currentBookId = null;
+
+function saveAll() {
+    localStorage.setItem("gmjBorrowed", JSON.stringify(borrowed));
+    localStorage.setItem("gmjReading", JSON.stringify(reading));
+    localStorage.setItem("gmjFavorites", JSON.stringify(favorites));
+    localStorage.setItem("gmjActivities", JSON.stringify(activities));
+    localStorage.setItem("gmjWeeklyViews", JSON.stringify(weeklyViews));
+}
+
+
+// ================================================
+// 3. NAVIGASI HALAMAN
+// ================================================
+
+function showPage(page, button = null) {
+
+    document.querySelectorAll(".page").forEach(section => {
+        section.classList.remove("active");
+    });
+
+    const target = document.getElementById(page);
+
+    if (target) {
+        target.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-link").forEach(link => {
+        link.classList.remove("active");
+    });
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+    const renderFunctions = {
+        home: renderHome,
+        catalog: renderCatalog,
+        borrowed: renderBorrowed,
+        reading: renderReading,
+        favorites: renderFavorites,
+        streak: () => renderStreak(),
+        quotes: () => renderQuotes()
+    };
+
+    if (renderFunctions[page]) {
+        renderFunctions[page]();
+    }
+
+    document.getElementById("sidebar").classList.remove("open");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+}
+
+
+// ================================================
+// 4. FUNGSI DASAR BUKU
+// ================================================
+
+function getBook(id) {
+    return books.find(book => Number(book.id) === Number(id));
+}
+
+function isFavorite(id) {
+    return favorites.includes(Number(id));
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
+}
+
+</script>
+```
+
+<badge color="success">Bagian 2 selesai</badge>
+
+
+
+<script>
+// DATA PENGGUNA YANG SEDANG LOGIN
+let currentUser = null;
+// ================================================
+// 1. KOMPONEN KARTU BUKU
+// ================================================
+
+function bookCard(book) {
+    const favorite = isFavorite(book.id);
+
+    return `
+        <article class="book-card panel p-3">
+
+            <button
+                onclick="openDetail(${book.id})"
+                class="block w-full text-left">
+
+                <img
+                    src="${escapeHTML(book.image)}"
+                    alt="${escapeHTML(book.title)}"
+                    class="book-cover"
+                    onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex';">
+
+                <div
+                    class="book-cover hidden items-center justify-center text-center p-4 text-xs text-gray-400">
+                    Cover tidak ditemukan
+                </div>
+
+                <h4 class="font-bold text-sm mt-3 line-clamp-2">
+                    ${escapeHTML(book.title)}
+                </h4>
+
+                <p class="text-xs text-gray-400 mt-1">
+                    ${escapeHTML(book.author)}
+                </p>
+
+                <p class="text-[10px] text-brand-600 mt-2 font-semibold">
+                    ${escapeHTML(book.category)}
+                </p>
+
+            </button>
+
+            <div class="flex gap-2 mt-3">
+
+                <button
+                    onclick="borrowBook(${book.id})"
+                    class="flex-1 bg-brand-600 hover:bg-brand-700 text-white rounded-lg py-2 text-xs font-bold">
+                    Pinjam
+                </button>
+
+                <button
+                    onclick="toggleFavorite(${book.id})"
+                    class="px-3 border border-gray-200 rounded-lg text-sm"
+                    title="Tambah ke favorit">
+                    ${favorite ? "❤️" : "♡"}
+                </button>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+// ================================================
+// 2. DASHBOARD
+// ================================================
+
+async function renderHome() {
+
+    const totalBooks = document.getElementById("totalBooks");
+    const totalBorrowed = document.getElementById("totalBorrowed");
+    const totalRead = document.getElementById("totalRead");
+    const totalStreak = document.getElementById("totalStreak");
+
+    if (totalBooks) totalBooks.textContent = books.length;
+
+    if (totalBorrowed) {
+        totalBorrowed.textContent = borrowed.length;
+    }
+
+    if (totalRead) {
+        totalRead.textContent = reading.length;
+    }
+
+    if (totalStreak) {
+        totalStreak.textContent = calculateStreak() + " 🔥";
+    }
+// Ambil informasi pengguna yang sedang login
+const sessionResponse = await fetch("api/session.php", {
+    credentials: "same-origin"
+});
+
+const sessionData = await sessionResponse.json();
+currentUser = sessionData.user;
+renderProfile();
+// Jika belum login, arahkan ke halaman login
+if (!sessionData.logged_in) {
+    window.location.href = "login.php";
+    return;
+}
+
+// Ambil nama pengguna dari session
+const sessionUserName = sessionData.user.name;
+
+    document.getElementById("headerName").textContent = sessionUserName;
+
+    // Membuat tombol Logout
+const logoutButton = document.createElement("a");
+
+logoutButton.href = "logout.php";
+logoutButton.textContent = "Logout";
+
+logoutButton.style.display = "inline-block";
+logoutButton.style.marginTop = "8px";
+logoutButton.style.padding = "7px 16px";
+logoutButton.style.background = "#7538ed";
+logoutButton.style.color = "#ffffff";
+logoutButton.style.borderRadius = "8px";
+logoutButton.style.fontSize = "12px";
+logoutButton.style.fontWeight = "bold";
+logoutButton.style.textDecoration = "none";
+
+const headerNameElement = document.getElementById("headerName");
+
+if (!document.getElementById("logoutButton")) {
+    logoutButton.id = "logoutButton";
+    headerNameElement.parentElement.appendChild(logoutButton);
+}
+
+    // Buku rekomendasi
+
+    document.getElementById("homeBooks").innerHTML =
+        books.slice(0, 5).map(bookCard).join("");
+
+
+    // Buku sedang dibaca
+
+    const currentlyReading = reading.filter(
+        item => item.progress < 100
+    );
+
+    const readingContainer =
+        document.getElementById("currentlyReading");
+
+    if (currentlyReading.length === 0) {
+
+        readingContainer.innerHTML = `
+            <div class="panel p-6 md:col-span-2">
+                <p class="text-sm text-gray-400">
+                    Belum ada buku yang sedang dibaca.
+                </p>
+
+                <button
+                    onclick="showPage('catalog')"
+                    class="text-brand-600 text-sm font-bold mt-3">
+                    Mulai membaca →
+                </button>
+            </div>
+        `;
+
+    } else {
+
+        readingContainer.innerHTML = currentlyReading
+            .slice(0, 4)
+            .map(item => {
+
+                const book = getBook(item.id);
+
+                if (!book) return "";
+
+                return `
+                    <div class="panel p-4 flex gap-4">
+
+                        <img
+                            src="${escapeHTML(book.image)}"
+                            alt="${escapeHTML(book.title)}"
+                            class="w-20 h-28 object-contain bg-gray-50 rounded-lg">
+
+                        <div class="flex-1 min-w-0">
+
+                            <h4 class="font-bold text-sm">
+                                ${escapeHTML(book.title)}
+                            </h4>
+
+                            <p class="text-xs text-gray-400 mt-1">
+                                ${escapeHTML(book.author)}
+                            </p>
+
+                            <div class="progress-track mt-4">
+                                <div
+                                    class="progress-fill"
+                                    style="width:${item.progress}%">
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-gray-400 mt-2">
+                                ${item.progress}% selesai
+                            </p>
+
+                            <button
+                                onclick="openReader(${book.id})"
+                                class="text-xs text-brand-600 font-bold mt-2">
+                                Lanjutkan membaca →
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("");
+
+    }
+
+
+    // Buku populer
+
+    document.getElementById("popularBooks").innerHTML =
+        getPopularBooks().map(bookCard).join("");
+
+
+    // Quote dashboard
+
+    if (typeof showDashboardQuote === "function") {
+        showDashboardQuote();
+    }
+
+}
+
+
+// ================================================
+// 3. KATEGORI BUKU
+// ================================================
+
+function setupCategories() {
+
+    const select = document.getElementById("categoryFilter");
+
+    if (!select) return;
+
+    const categories = [
+        ...new Set(books.map(book => book.category))
+    ].sort();
+
+    select.innerHTML = `
+        <option value="">Semua Kategori</option>
+    `;
+
+    categories.forEach(category => {
+
+        select.innerHTML += `
+            <option value="${escapeHTML(category)}">
+                ${escapeHTML(category)}
+            </option>
+        `;
+
+    });
+
+}
+
+
+// ================================================
+// 4. KATALOG DAN PENCARIAN
+// ================================================
+
+function renderCatalog() {
+
+    const searchInput = document.getElementById("searchBook");
+    const categoryInput = document.getElementById("categoryFilter");
+
+    const search = searchInput.value.toLowerCase().trim();
+    const category = categoryInput.value;
+
+    const filteredBooks = books.filter(book => {
+
+        const matchTitle =
+            book.title.toLowerCase().includes(search);
+
+        const matchAuthor =
+            book.author.toLowerCase().includes(search);
+
+        const matchCategory =
+            !category || book.category === category;
+
+        return (matchTitle || matchAuthor) && matchCategory;
+
+    });
+
+    const container = document.getElementById("catalogBooks");
+
+    if (filteredBooks.length === 0) {
+
+        container.innerHTML = `
+            <div class="panel p-8 text-center col-span-full">
+                <p class="text-3xl mb-3">🔍</p>
+
+                <h3 class="font-bold">
+                    Buku tidak ditemukan
+                </h3>
+
+                <p class="text-sm text-gray-400 mt-2">
+                    Coba gunakan kata kunci atau kategori lain.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = filteredBooks
+        .map(bookCard)
+        .join("");
+
+}
+
+
+// ================================================
+// 5. DETAIL BUKU
+// ================================================
+
+function openDetail(id) {
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    currentBookId = Number(id);
+
+    const item = reading.find(
+        readingItem => readingItem.id === Number(id)
+    );
+
+    const progress = item ? item.progress : 0;
+
+    const favorite = isFavorite(id);
+
+    document.getElementById("bookDetail").innerHTML = `
+
+        <div class="panel p-6 md:p-8">
+
+            <div class="grid md:grid-cols-[230px_1fr] gap-8">
+
+                <div>
+
+                    <img
+                        src="${escapeHTML(book.image)}"
+                        alt="${escapeHTML(book.title)}"
+                        class="w-full max-h-96 object-contain bg-gray-50 rounded-xl">
+
+                </div>
+
+                <div>
+
+                    <span class="text-xs text-brand-600 font-bold">
+                        ${escapeHTML(book.category)}
+                    </span>
+
+                    <h2 class="text-2xl md:text-3xl font-extrabold mt-3">
+                        ${escapeHTML(book.title)}
+                    </h2>
+
+                    <p class="text-gray-400 mt-3">
+                        Penulis: ${escapeHTML(book.author)}
+                    </p>
+
+                    <div class="flex flex-wrap gap-3 mt-3 text-xs text-gray-400">
+
+                        <span>📅 ${book.year}</span>
+
+                        <span>📄 ${book.pages} halaman</span>
+
+                    </div>
+
+                    <div class="mt-7">
+
+                        <h3 class="font-bold mb-3">
+                            Sinopsis Buku
+                        </h3>
+
+                        <p class="text-sm leading-7 text-gray-600">
+                            ${escapeHTML(book.synopsis)}
+                        </p>
+
+                    </div>
+
+                    <div class="mt-7">
+
+                        <p class="text-xs text-gray-400 mb-2">
+                            Progres membaca
+                        </p>
+
+                        <div class="progress-track">
+                            <div
+                                class="progress-fill"
+                                style="width:${progress}%">
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400 mt-2">
+                            ${progress}% selesai
+                        </p>
+
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 mt-7">
+${book.pdf_file ? `
+    <button
+        onclick="window.open('read_pdf.php?id=${book.id}', '_blank')"
+        class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl text-sm font-bold">
+        📖 Baca Buku
+    </button>
+` : `
+    <span class="text-sm text-gray-500 px-3 py-3">
+        PDF belum tersedia
+    </span>
+`}
+                        <button
+                            onclick="borrowBook(${book.id})"
+                            class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-3 rounded-xl text-sm font-bold">
+                            📖 Pinjam Buku
+                        </button>
+
+
+                        <button
+                            onclick="toggleFavorite(${book.id});openDetail(${book.id})"
+                            class="border border-gray-200 px-5 py-3 rounded-xl text-sm font-bold">
+                            ${favorite ? "❤️ Favorit" : "♡ Tambah Favorit"}
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    showPage("detail");
+
+}
+
+
+// ================================================
+// 6. BUKU POPULER MINGGU INI
+// ================================================
+
+function getPopularBooks() {
+
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    const views = loadStorage("gmjBookViews", {});
+
+    const popularity = books.map(book => {
+
+        const recentViews = (views[book.id] || []).filter(
+            timestamp => now - timestamp <= sevenDays
+        );
+
+        return {
+            ...book,
+            weeklyPopularity: recentViews.length
+        };
+
+    });
+
+    return popularity
+        .sort((a, b) =>
+            b.weeklyPopularity - a.weeklyPopularity
+        )
+        .slice(0, 5);
+
+}
+
+
+// Catat kunjungan detail buku untuk popularitas
+
+function recordBookView(id) {
+
+    const views = loadStorage("gmjBookViews", {});
+
+    if (!views[id]) {
+        views[id] = [];
+    }
+
+    views[id].push(Date.now());
+
+    localStorage.setItem(
+        "gmjBookViews",
+        JSON.stringify(views)
+    );
+
+}
+
+</script>
+
+<script>
+
+// ================================================
+// 1. SISTEM PEMINJAMAN BUKU
+// ================================================
+
+function borrowBook(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) {
+        alert("Buku tidak ditemukan.");
+        return;
+    }
+
+    const alreadyBorrowed = borrowed.some(
+        item => Number(item.id) === id
+    );
+
+    if (alreadyBorrowed) {
+        alert("Buku ini sudah ada di daftar pinjamanmu.");
+        return;
+    }
+
+    const today = new Date();
+    const dueDate = new Date(today);
+
+    // Masa peminjaman 7 hari
+    dueDate.setDate(today.getDate() + 7);
+
+    borrowed.push({
+        id: id,
+        loanDate: formatDate(today),
+        dueDate: formatDate(dueDate),
+        status: "Dipinjam"
+    });
+
+    saveAll();
+
+    renderBorrowed();
+    renderHome();
+
+    alert(
+        `"${book.title}" berhasil ditambahkan ke daftar Buku Dipinjam.`
+    );
+}
+
+
+// ================================================
+// 2. FORMAT TANGGAL
+// ================================================
+
+function formatDate(date) {
+
+    const year = date.getFullYear();
+
+    const month = String(
+        date.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        date.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+// ================================================
+// 3. MENAMPILKAN BUKU DIPINJAM
+// ================================================
+
+function renderBorrowed() {
+
+    const container = document.getElementById("borrowedList");
+
+    if (!container) return;
+
+    if (borrowed.length === 0) {
+
+        container.innerHTML = `
+            <div class="panel p-8 text-center md:col-span-2">
+
+                <div class="text-4xl mb-3">📚</div>
+
+                <h3 class="font-bold text-lg">
+                    Belum Ada Buku Dipinjam
+                </h3>
+
+                <p class="text-sm text-gray-400 mt-2">
+                    Buku yang kamu pinjam akan muncul di sini.
+                </p>
+
+                <button
+                    onclick="showPage('catalog')"
+                    class="bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold mt-5">
+                    Jelajahi Katalog
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = borrowed.map(item => {
+
+        const book = getBook(item.id);
+
+        if (!book) return "";
+
+        const today = formatDate(new Date());
+
+        const overdue = today > item.dueDate;
+
+        return `
+
+            <div class="panel p-4 flex gap-4">
+
+                <img
+                    src="${escapeHTML(book.image)}"
+                    alt="${escapeHTML(book.title)}"
+                    class="w-24 h-32 object-contain bg-gray-50 rounded-lg">
+
+                <div class="flex-1 min-w-0">
+
+                    <h3 class="font-bold text-sm">
+                        ${escapeHTML(book.title)}
+                    </h3>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        ${escapeHTML(book.author)}
+                    </p>
+
+                    <div class="mt-3 space-y-1">
+
+                        <p class="text-xs text-gray-500">
+                            Tanggal pinjam:
+                            <span class="font-semibold">
+                                ${item.loanDate}
+                            </span>
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            Batas pengembalian:
+                            <span class="font-semibold">
+                                ${item.dueDate}
+                            </span>
+                        </p>
+
+                    </div>
+
+                    <span class="inline-block mt-3 text-[10px] font-bold px-3 py-1 rounded-full
+                        ${overdue
+                            ? 'bg-red-100 text-red-600'
+                            : 'bg-green-100 text-green-600'}">
+
+                        ${overdue ? "Terlambat" : "Sedang Dipinjam"}
+
+                    </span>
+
+                    <div class="mt-3">
+
+                        <button
+                            onclick="returnBook(${book.id})"
+                            class="bg-brand-600 hover:bg-brand-700 text-white rounded-lg px-4 py-2 text-xs font-bold">
+
+                            Kembalikan Buku
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+// ================================================
+// 4. PENGEMBALIAN BUKU
+// ================================================
+
+function returnBook(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    const confirmation = confirm(
+        `Apakah kamu yakin ingin mengembalikan "${book.title}"?`
+    );
+
+    if (!confirmation) return;
+
+    borrowed = borrowed.filter(
+        item => Number(item.id) !== id
+    );
+
+    saveAll();
+
+    renderBorrowed();
+    renderHome();
+
+    alert(
+        `"${book.title}" berhasil dikembalikan.`
+    );
+
+}
+
+
+// ================================================
+// 5. MEMULAI AKTIVITAS MEMBACA
+// ================================================
+
+function startReading(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    let item = reading.find(
+        data => Number(data.id) === id
+    );
+
+    if (!item) {
+
+        item = {
+            id: id,
+            progress: 0,
+            startedAt: formatDate(new Date()),
+            lastRead: formatDate(new Date()),
+            status: "Sedang Dibaca"
+        };
+
+        reading.push(item);
+
+    }
+
+    recordReadingActivity();
+
+    saveAll();
+
+    renderReading();
+    renderHome();
+
+    alert(
+        `"${book.title}" berhasil ditambahkan ke Buku Dibaca.`
+    );
+
+}
+
+
+// ================================================
+// 6. MENAMPILKAN BUKU DIBACA
+// ================================================
+
+function renderReading() {
+
+    const container = document.getElementById("readingList");
+
+    if (!container) return;
+
+    if (reading.length === 0) {
+
+        container.innerHTML = `
+            <div class="panel p-8 text-center md:col-span-2">
+
+                <div class="text-4xl mb-3">📖</div>
+
+                <h3 class="font-bold text-lg">
+                    Belum Ada Aktivitas Membaca
+                </h3>
+
+                <p class="text-sm text-gray-400 mt-2">
+                    Mulai membaca buku untuk melihat progresmu.
+                </p>
+
+                <button
+                    onclick="showPage('catalog')"
+                    class="bg-brand-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold mt-5">
+                    Pilih Buku
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = reading.map(item => {
+
+        const book = getBook(item.id);
+
+        if (!book) return "";
+
+        const progress = Math.max(
+            0,
+            Math.min(100, Number(item.progress) || 0)
+        );
+
+        const completed = progress >= 100;
+
+        return `
+
+            <div class="panel p-4 flex gap-4">
+
+                <img
+                    src="${escapeHTML(book.image)}"
+                    alt="${escapeHTML(book.title)}"
+                    class="w-24 h-32 object-contain bg-gray-50 rounded-lg">
+
+                <div class="flex-1 min-w-0">
+
+                    <h3 class="font-bold text-sm">
+                        ${escapeHTML(book.title)}
+                    </h3>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        ${escapeHTML(book.author)}
+                    </p>
+
+                    <div class="flex justify-between text-xs mt-4 mb-2">
+
+                        <span class="text-gray-400">
+                            Progress membaca
+                        </span>
+
+                        <span class="font-bold text-brand-600">
+                            ${progress}%
+                        </span>
+
+                    </div>
+
+                    <div class="progress-track">
+
+                        <div
+                            class="progress-fill"
+                            style="width:${progress}%">
+                        </div>
+
+                    </div>
+
+                    <p class="text-[10px] mt-2 font-semibold
+                        ${completed
+                            ? 'text-green-600'
+                            : 'text-brand-600'}">
+
+                        ${completed
+                            ? '✓ Selesai Dibaca'
+                            : 'Sedang Dibaca'}
+
+                    </p>
+
+                    <div class="mt-3 flex flex-wrap gap-2">
+
+                        <button
+                            onclick="openReader(${book.id})"
+                            class="bg-brand-600 text-white rounded-lg px-3 py-2 text-xs font-bold">
+
+                            Lanjutkan
+
+                        </button>
+
+                        <button
+                            onclick="removeReading(${book.id})"
+                            class="border rounded-lg px-3 py-2 text-xs font-semibold">
+
+                            Hapus
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+}
+
+
+// ================================================
+// 7. MENGUBAH PROGRES MEMBACA
+// ================================================
+
+function updateProgress(id, value) {
+
+    id = Number(id);
+
+    let item = reading.find(
+        data => Number(data.id) === id
+    );
+
+    if (!item) return;
+
+    const progress = Math.max(
+        0,
+        Math.min(100, Number(value))
+    );
+
+    item.progress = progress;
+    item.lastRead = formatDate(new Date());
+
+    item.status = progress >= 100
+        ? "Selesai Dibaca"
+        : "Sedang Dibaca";
+
+    recordReadingActivity();
+
+    saveAll();
+
+    renderReading();
+    renderHome();
+    renderStreak();
+
+}
+
+
+// ================================================
+// 8. MENGHAPUS RIWAYAT MEMBACA
+// ================================================
+
+function removeReading(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    const confirmation = confirm(
+        `Hapus "${book.title}" dari daftar Buku Dibaca?`
+    );
+
+    if (!confirmation) return;
+
+    reading = reading.filter(
+        item => Number(item.id) !== id
+    );
+
+    saveAll();
+
+    renderReading();
+    renderHome();
+
+}
+
+
+// ================================================
+// 9. SISTEM FAVORIT
+// ================================================
+
+function toggleFavorite(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    if (isFavorite(id)) {
+
+        favorites = favorites.filter(
+            favoriteId => favoriteId !== id
+        );
+
+    } else {
+
+        favorites.push(id);
+
+    }
+
+    saveAll();
+
+    renderFavorites();
+    renderHome();
+
+    // Perbarui katalog jika sedang terbuka
+    renderCatalog();
+
+}
+
+
+// ================================================
+// 10. MENAMPILKAN DAFTAR FAVORIT
+// ================================================
+
+function renderFavorites() {
+
+    const container = document.getElementById("favoriteList");
+
+    if (!container) return;
+
+    const favoriteBooks = books.filter(
+        book => isFavorite(book.id)
+    );
+
+    if (favoriteBooks.length === 0) {
+
+        container.innerHTML = `
+            <div class="panel p-8 text-center col-span-full">
+
+                <div class="text-4xl mb-3">❤️</div>
+
+                <h3 class="font-bold text-lg">
+                    Belum Ada Buku Favorit
+                </h3>
+
+                <p class="text-sm text-gray-400 mt-2">
+                    Tambahkan buku favorit melalui katalog.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = favoriteBooks
+        .map(bookCard)
+        .join("");
+
+}
+
+</script>
+
+<script>
+
+// ================================================
+// 1. KOLEKSI QUOTES LIBRARY
+// ================================================
+
+const quotes = [
+    {
+        text: "A room without books is like a body without a soul.",
+        author: "Marcus Tullius Cicero"
+    },
+    {
+        text: "The more that you read, the more things you will know.",
+        author: "Dr. Seuss"
+    },
+    {
+        text: "There is no friend as loyal as a book.",
+        author: "Ernest Hemingway"
+    },
+    {
+        text: "Today a reader, tomorrow a leader.",
+        author: "Margaret Fuller"
+    },
+    {
+        text: "Reading is essential for those who seek to rise above the ordinary.",
+        author: "Jim Rohn"
+    },
+    {
+        text: "Books are a uniquely portable magic.",
+        author: "Stephen King"
+    },
+    {
+        text: "A book is a dream that you hold in your hands.",
+        author: "Neil Gaiman"
+    },
+    {
+        text: "Once you learn to read, you will be forever free.",
+        author: "Frederick Douglass"
+    },
+    {
+        text: "Knowledge is power.",
+        author: "Francis Bacon"
+    },
+    {
+        text: "The beautiful thing about learning is that nobody can take it away from you.",
+        author: "B.B. King"
+    },
+    {
+        text: "Sebuah buku dapat membuka jendela menuju dunia yang belum pernah kita kenal.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Tidak perlu membaca dengan cepat. Bacalah dengan pemahaman.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Satu halaman hari ini adalah satu langkah menuju pengetahuan baru.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Jangan berhenti belajar hanya karena perjalanan terasa sulit.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Kebiasaan kecil yang dilakukan setiap hari dapat menghasilkan perubahan besar.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Membaca bukan sekadar mengumpulkan kata, tetapi menemukan makna.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Buku adalah teman yang selalu menyediakan ruang untuk belajar.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Luangkan waktu untuk membaca, karena pengetahuan tidak datang dengan sendirinya.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Setiap cerita memiliki pelajaran, bahkan setelah halaman terakhir.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Jadilah pembaca hari ini untuk menjadi pribadi yang lebih baik esok hari.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Tidak ada usaha belajar yang benar-benar sia-sia.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Masa depan dibangun dari hal-hal kecil yang kita pelajari hari ini.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Teruslah penasaran, karena rasa ingin tahu adalah awal dari pengetahuan.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Baca sedikit, pahami lebih dalam, dan terapkan dalam kehidupan.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Jangan menunggu waktu luang untuk membaca. Luangkan waktu untuk berkembang.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Perjalanan seribu halaman dimulai dari satu halaman pertama.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Membaca membuat kita mengenal dunia, menulis membuat dunia mengenal pikiran kita.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Belajar bukan tentang menjadi sempurna, melainkan terus bertumbuh.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Pengetahuan akan semakin bermakna ketika dibagikan.",
+        author: "GMJ Library"
+    },
+    {
+        text: "Jadikan membaca sebagai kebiasaan, bukan hanya kegiatan sesekali.",
+        author: "GMJ Library"
+    }
+];
+
+
+// ================================================
+// 2. QUOTE OF THE DAY
+// ================================================
+
+function showDashboardQuote() {
+
+    const quote = quotes[currentQuote % quotes.length];
+
+    const quoteText = document.getElementById("dashboardQuote");
+    const quoteAuthor = document.getElementById("dashboardAuthor");
+
+    if (quoteText) {
+        quoteText.textContent = `"${quote.text}"`;
+    }
+
+    if (quoteAuthor) {
+        quoteAuthor.textContent = `— ${quote.author}`;
+    }
+
+}
+
+
+function nextQuote() {
+
+    currentQuote = (currentQuote + 1) % quotes.length;
+
+    showDashboardQuote();
+
+}
+
+
+// ================================================
+// 3. MENAMPILKAN SEMUA QUOTES
+// ================================================
+
+function renderQuotes() {
+
+    const container = document.getElementById("quotesCollection");
+
+    if (!container) return;
+
+    container.innerHTML = quotes.map((quote, index) => `
+
+        <article class="panel p-5 hover:shadow-md transition">
+
+            <div class="flex justify-between items-start">
+
+                <span class="text-3xl text-brand-500 font-bold">
+                    “
+                </span>
+
+                <span class="text-[10px] text-gray-400 font-semibold">
+                    QUOTE ${index + 1}
+                </span>
+
+            </div>
+
+            <p class="font-semibold leading-relaxed mt-2">
+                ${escapeHTML(quote.text)}
+            </p>
+
+            <div class="flex justify-between items-center mt-5 pt-4 border-t">
+
+                <p class="text-xs text-gray-400">
+                    — ${escapeHTML(quote.author)}
+                </p>
+
+                <button
+                    onclick="copyQuote(${index})"
+                    class="text-xs text-brand-600 font-bold hover:underline">
+
+                    Salin Quote
+
+                </button>
+
+            </div>
+
+        </article>
+
+    `).join("");
+
+}
+
+
+// ================================================
+// 4. MENYALIN QUOTE
+// ================================================
+
+function copyQuote(index) {
+
+    const quote = quotes[index];
+
+    const text = `"${quote.text}" — ${quote.author}`;
+
+    if (navigator.clipboard && window.isSecureContext) {
+
+        navigator.clipboard.writeText(text)
+            .then(() => alert("Quote berhasil disalin!"))
+            .catch(() => alert("Quote gagal disalin."));
+
+    } else {
+
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+
+        try {
+            document.execCommand("copy");
+            alert("Quote berhasil disalin!");
+        } catch (error) {
+            alert("Quote gagal disalin.");
+        }
+
+        textarea.remove();
+
+    }
+
+}
+
+
+// ================================================
+// 5. FORMAT TANGGAL LOKAL
+// ================================================
+
+function getTodayDate() {
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+// ================================================
+// 6. MENCATAT AKTIVITAS MEMBACA
+// ================================================
+
+function recordReadingActivity() {
+
+    const today = getTodayDate();
+
+    if (!activities.includes(today)) {
+
+        activities.push(today);
+
+        activities.sort();
+
+    }
+
+    saveAll();
+
+    renderStreak();
+
+}
+
+
+// ================================================
+// 7. MENGHITUNG READING STREAK
+// ================================================
+
+function calculateStreak() {
+
+    const dates = [...new Set(activities)].sort().reverse();
+
+    if (dates.length === 0) return 0;
+
+    const today = getTodayDate();
+
+    const yesterdayDate = new Date();
+
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+    const yesterday = formatDate(yesterdayDate);
+
+    // Streak tetap aktif jika terakhir membaca hari ini
+    // atau kemarin.
+
+    if (!dates.includes(today) && !dates.includes(yesterday)) {
+        return 0;
+    }
+
+    let streak = 0;
+
+    const checkDate = new Date(
+        dates.includes(today) ? today : yesterday
+    );
+
+    while (true) {
+
+        const key = formatDate(checkDate);
+
+        if (!dates.includes(key)) break;
+
+        streak++;
+
+        checkDate.setDate(checkDate.getDate() - 1);
+
+    }
+
+    return streak;
+
+}
+
+
+// ================================================
+// 8. KALENDER READING STREAK
+// ================================================
+
+function renderStreak() {
+
+    const streak = calculateStreak();
+
+    const streakNumber = document.getElementById("streakNumber");
+
+    const totalStreak = document.getElementById("totalStreak");
+
+    if (streakNumber) {
+        streakNumber.textContent = `${streak} 🔥`;
+    }
+
+    if (totalStreak) {
+        totalStreak.textContent = `${streak} 🔥`;
+    }
+
+    const calendar = document.getElementById("streakCalendar");
+
+    if (!calendar) return;
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const month = now.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    const dayNames = [
+        "Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"
+    ];
+
+    let html = dayNames.map(day => `
+
+        <div class="text-center text-xs text-gray-400 font-bold py-2">
+            ${day}
+        </div>
+
+    `).join("");
+
+    // Kotak kosong sebelum tanggal 1
+
+    for (let i = 0; i < firstDay; i++) {
+
+        html += `<div></div>`;
+
+    }
+
+    // Tanggal dalam bulan
+
+    for (let day = 1; day <= totalDays; day++) {
+
+        const date = new Date(year, month, day);
+
+        const key = formatDate(date);
+
+        const active = activities.includes(key);
+
+        const isToday = day === now.getDate();
+
+        html += `
+
+            <div
+                title="${key}"
+                class="aspect-square rounded-lg flex items-center justify-center text-xs font-semibold
+                ${active
+                    ? 'bg-brand-600 text-white'
+                    : 'bg-gray-100 text-gray-500'}
+                ${isToday ? 'ring-2 ring-brand-300' : ''}">
+
+                ${active ? "✓" : day}
+
+            </div>
+
+        `;
+
+    }
+
+    calendar.innerHTML = html;
+
+}
+
+
+// ================================================
+// 9. PROFIL PENGGUNA
+// ================================================
+
+function saveProfile() {
+
+    const input = document.getElementById("profileName");
+
+    const name = input.value.trim();
+
+    if (!name) {
+
+        alert("Nama tidak boleh kosong.");
+
+        return;
+
+    }
+
+    readerName = name;
+
+    localStorage.setItem("gmjName", readerName);
+
+    document.getElementById("headerName").textContent = readerName;
+
+    alert("Profil berhasil disimpan!");
+
+    renderHome();
+
+}
+
+
+// ================================================
+// 10. MENAMPILKAN PROFIL
+// ================================================
+
+function renderProfile() {
+
+    const input = document.getElementById("profileName");
+
+    if (input) {
+        input.value = readerName;
+    }
+// Tampilkan informasi akun dari database
+if (currentUser) {
+    document.getElementById("accountName").textContent =
+        currentUser.name || "-";
+
+    document.getElementById("accountEmail").textContent =
+        currentUser.email || "-";
+
+    document.getElementById("accountId").textContent =
+        currentUser.id || "-";
+
+    document.getElementById("accountRole").textContent =
+        currentUser.role === "admin" ? "Administrator" : "Member";
+}
+}
+
+
+// ================================================
+// 11. DATA BAB DEMO PEMBACA
+// ================================================
+
+// Bab di bawah merupakan teks contoh buatan sendiri.
+// Bukan salinan isi buku berhak cipta.
+
+const demoChapters = [
+
+    {
+        title: "Bab 1 — Memulai Perjalanan",
+
+        content: `Setiap perjalanan selalu dimulai dari sebuah langkah kecil. Ada banyak hal yang belum kita ketahui, banyak pengalaman yang menunggu untuk ditemukan, dan banyak pelajaran yang dapat kita ambil dari setiap proses.
+
+Membaca menjadi salah satu cara untuk mengenal dunia lebih luas. Melalui buku, seseorang dapat menemukan gagasan, pengalaman, serta sudut pandang yang mungkin belum pernah dipikirkan sebelumnya.
+
+Tidak perlu terburu-buru untuk menyelesaikan sebuah bacaan. Hal terpenting adalah menikmati proses dan memahami setiap pesan yang disampaikan.`
+    },
+
+    {
+        title: "Bab 2 — Belajar dari Pengalaman",
+
+        content: `Pengalaman mengajarkan kita untuk memahami sesuatu dengan lebih dalam. Tidak semua hal berjalan sesuai harapan, tetapi setiap proses memberikan kesempatan untuk tumbuh.
+
+Pengetahuan yang diperoleh dari membaca dapat membantu seseorang memahami berbagai persoalan. Namun, pemahaman tersebut akan semakin bermakna ketika diterapkan dalam kehidupan sehari-hari.
+
+Setiap orang memiliki perjalanan belajar yang berbeda. Karena itu, jangan membandingkan proses diri sendiri dengan perjalanan orang lain.`
+    },
+
+    {
+        title: "Bab 3 — Melangkah Lebih Jauh",
+
+        content: `Teruslah melangkah meskipun perubahan terjadi secara perlahan. Kebiasaan baik yang dilakukan secara konsisten dapat memberikan hasil yang berarti.
+
+Membaca bukan hanya tentang menyelesaikan banyak halaman. Membaca juga tentang menemukan pemahaman baru, melatih cara berpikir, dan memperluas wawasan.
+
+Jadikan setiap kesempatan sebagai ruang untuk berkembang. Satu halaman yang dibaca hari ini dapat menjadi awal dari perubahan yang lebih besar.`
+    },
+
+    {
+        title: "Bab 4 — Menemukan Makna",
+
+        content: `Setiap bacaan dapat memberikan pengalaman yang berbeda. Ada cerita yang membuat kita berpikir, ada pengetahuan yang membantu menyelesaikan masalah, dan ada kalimat sederhana yang memberikan inspirasi.
+
+Makna sebuah buku tidak selalu ditemukan dalam satu kali membaca. Terkadang, kita perlu kembali membuka halaman yang sama untuk memahami pesan yang sebelumnya terlewatkan.
+
+Teruslah belajar dan berikan ruang bagi diri sendiri untuk bertumbuh.`
+    },
+
+    {
+        title: "Bab 5 — Penutup",
+
+        content: `Perjalanan membaca tidak berakhir ketika sebuah buku selesai. Justru, setiap buku dapat menjadi awal dari pertanyaan dan pengetahuan baru.
+
+Jangan berhenti mencari hal-hal yang dapat membuat diri menjadi lebih baik. Pertahankan rasa ingin tahu dan jadikan membaca sebagai bagian dari kehidupan.
+
+Terima kasih telah menjadi bagian dari perjalanan GMJ Library.`
+    }
+
+];
+
+
+// ================================================
+// 12. MEMBUKA HALAMAN MEMBACA
+// ================================================
+
+let activeReaderBook = null;
+
+let activeChapter = 1;
+
+
+function openReader(id) {
+
+    id = Number(id);
+
+    const book = getBook(id);
+
+    if (!book) return;
+
+    activeReaderBook = id;
+
+    let item = reading.find(
+        data => Number(data.id) === id
+    );
+
+    if (!item) {
+
+        item = {
+            id: id,
+            progress: 0,
+            startedAt: getTodayDate(),
+            lastRead: getTodayDate(),
+            status: "Sedang Dibaca"
+        };
+
+        reading.push(item);
+
+    }
+
+    recordReadingActivity();
+
+    activeChapter = Math.max(
+        1,
+        Math.ceil(
+            (item.progress / 100) * demoChapters.length
+        )
+    );
+
+    if (activeChapter > demoChapters.length) {
+        activeChapter = demoChapters.length;
+    }
+
+    document.getElementById("readerTitle").textContent = book.title;
+
+    document.getElementById("readerAuthor").textContent = book.author;
+
+    saveAll();
+
+    showPage("reader");
+
+    displayChapter();
+
+}
+
+
+// ================================================
+// 13. MENAMPILKAN BAB
+// ================================================
+
+function displayChapter() {
+
+    const book = getBook(activeReaderBook);
+
+    if (!book) return;
+
+    const chapter = demoChapters[activeChapter - 1];
+
+    if (!chapter) return;
+
+    const progress = Math.round(
+        activeChapter / demoChapters.length * 100
+    );
+
+    document.getElementById("readerChapterLabel").textContent =
+        `Bab ${activeChapter} dari ${demoChapters.length}`;
+
+    document.getElementById("readerProgressLabel").textContent =
+        `${progress}% selesai`;
+
+    document.getElementById("readerProgressBar").style.width =
+        `${progress}%`;
+
+    document.getElementById("readerChapterTitle").textContent =
+        chapter.title;
+
+    document.getElementById("readerContent").textContent =
+        chapter.content;
+
+    const item = reading.find(
+        data => Number(data.id) === Number(activeReaderBook)
+    );
+
+    if (item) {
+
+        item.progress = progress;
+
+        item.lastRead = getTodayDate();
+
+        item.status = progress >= 100
+            ? "Selesai Dibaca"
+            : "Sedang Dibaca";
+
+        saveAll();
+
+    }
+
+    recordReadingActivity();
+
+}
+
+
+// ================================================
+// 14. BAB SELANJUTNYA
+// ================================================
+
+function nextChapter() {
+
+    if (activeChapter < demoChapters.length) {
+
+        activeChapter++;
+
+        displayChapter();
+
+    } else {
+
+        const item = reading.find(
+            data => Number(data.id) === Number(activeReaderBook)
+        );
+
+        if (item) {
+
+            item.progress = 100;
+
+            item.status = "Selesai Dibaca";
+
+            item.lastRead = getTodayDate();
+
+        }
+
+        saveAll();
+
+        renderReading();
+
+        renderHome();
+
+        alert("Selamat! Kamu telah menyelesaikan bacaan demo ini. 🎉");
+
+        showPage("reading");
+
+    }
+
+}
+
+
+// ================================================
+// 15. BAB SEBELUMNYA
+// ================================================
+
+function previousChapter() {
+
+    if (activeChapter > 1) {
+
+        activeChapter--;
+
+        displayChapter();
+
+    } else {
+
+        alert("Kamu sedang berada di bab pertama.");
+
+    }
+
+}
+
+
+// ================================================
+// 16. INISIALISASI HALAMAN
+// ================================================
+
+// ================================================
+// 16. INISIALISASI HALAMAN
+// ================================================
+
+async function initializeGMJLibrary() {
+
+    // Ambil data buku dari database terlebih dahulu
+    const booksLoaded = await loadBooks();
+
+    if (!booksLoaded) {
+        return;
+    }
+
+    document.getElementById("headerName").textContent = readerName;
+
+    setupCategories();
+
+    renderHome();
+    renderCatalog();
+    renderBorrowed();
+    renderReading();
+    renderFavorites();
+    renderStreak();
+    renderQuotes();
+    renderProfile();
+
+}
+
+// Jalankan setelah seluruh halaman selesai dimuat
+
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeGMJLibrary
+    );
+
+} else {
+
+    initializeGMJLibrary();
+
+}
+</script>
